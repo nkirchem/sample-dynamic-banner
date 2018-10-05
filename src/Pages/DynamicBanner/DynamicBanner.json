@@ -1,0 +1,22 @@
+{
+    "contributions": [
+        {
+            "id": "dynamic-banner-subscription",
+            "type": "ms.vss-web.event-subscription",
+            "targets": [
+                "ms.vss-build-web.build-definitions-hub"
+            ],
+            "properties": {
+                "eventName": "page-interactive",
+                "command": {
+                    "uri": "dist/DynamicBanner/DynamicBanner.html",
+                    "serviceName": "DynamicBannerService",
+                    "methodName": "showBanner"
+                }
+            }
+        }
+    ],
+    "scopes": [
+        "vso.build"
+    ]
+}
