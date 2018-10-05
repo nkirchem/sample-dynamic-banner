@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "sample-dynamic-banner",
     "publisher": "ms-samples",
-    "version": "1.0.113",
+    "version": "1.0.114",
     "name": "Sample Dynamic Banner",
     "description": "Azure DevOps extension sample",
     "categories": [

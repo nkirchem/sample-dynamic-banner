@@ -1,40 +1,35 @@
 import "es6-promise/auto";
-import * as DevOps from "azure-devops-extension-sdk";
+import * as SDK from "azure-devops-extension-sdk/SDK";
+import { getClient } from "azure-devops-extension-api/extensions/Client";
+import { CommonServiceIds, IGlobalMessagesService, IProjectPageService, MessageBannerLevel } from "azure-devops-extension-api/extensions/CommonServices";
 
-import { getClient } from "azure-devops-extension-api/extension";
 import { BuildRestClient } from "azure-devops-extension-api/clients/Build";
 import { BuildDefinition } from "azure-devops-extension-api/types/Build";
 
-DevOps.register("DynamicBannerService", () => {
+SDK.register("DynamicBannerService", () => {
     return {
         showBanner: async () => {
 
-            DevOps.getService<DevOps.IProjectPageService>(DevOps.CommonServiceIds.ProjectPageService).then((projectService) => {
-                projectService.getProject().then((project) => {
+            const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
+            const project = await projectService.getProject();
 
-                    DevOps.getService<{ getDefinition: () => Promise<BuildDefinition | undefined> }>("ms.vss-build-web.definitions-page-data-service").then(pageSvc => {
-                        pageSvc.getDefinition().then(def => {
+            const pageSvc = await SDK.getService<{ getDefinition: () => Promise<BuildDefinition | undefined> }>("ms.vss-build-web.definitions-page-data-service");
+            const definition = await pageSvc.getDefinition();
 
-                            if (def) {
-                                getClient(BuildRestClient).getDefinition(def.id, project.id).then(result => {
-                                    DevOps.getService<DevOps.IGlobalMessagesService>(DevOps.CommonServiceIds.GlobalMessagesService).then((messageService) => {
-                                        messageService.setGlobalMessageBanner({
-                                            level: DevOps.MessageBannerLevel.info,
-                                            messageFormat: `Build ${def.name} authored by ${def.authoredBy.displayName}. {0} for more details.`,
-                                            messageLinks: [{
-                                                name: "Click here",
-                                                href: def.url
-                                            }]
-                                        });
-                                    });
-                                });
-                            }
-                        });     
-                    });
+            if (definition) {
+                const result = await getClient(BuildRestClient).getDefinition(definition.id, project.id);
+                const messageService = await SDK.getService<IGlobalMessagesService>(CommonServiceIds.GlobalMessagesService);
+                messageService.setGlobalMessageBanner({
+                    level: MessageBannerLevel.info,
+                    messageFormat: `Build ${result.name} authored by ${result.authoredBy.displayName}. {0} for more details.`,
+                    messageLinks: [{
+                        name: "Click here",
+                        href: result.url
+                    }]
                 });
-            });
+            }
         }
     }
 });
 
-DevOps.init();
+SDK.init();
