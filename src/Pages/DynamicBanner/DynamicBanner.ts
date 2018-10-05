@@ -2,7 +2,7 @@ import * as SDK from "azure-devops-extension-sdk/SDK";
 import { getClient } from "azure-devops-extension-api/extensions/Client";
 import { CommonServiceIds, IGlobalMessagesService, IProjectPageService, MessageBannerLevel } from "azure-devops-extension-api/extensions/CommonServices";
 
-import { BuildServiceIds, IBuildDefinitionPageDataService } from "azure-devops-extension-api/extensions/BuildServices";
+import { BuildServiceIds, IBuildPageDataService } from "azure-devops-extension-api/extensions/BuildServices";
 import { BuildRestClient } from "azure-devops-extension-api/clients/Build";
 
 SDK.register("DynamicBannerService", () => {
@@ -12,15 +12,15 @@ SDK.register("DynamicBannerService", () => {
             const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
             const project = await projectService.getProject();
 
-            const pageSvc = await SDK.getService<IBuildDefinitionPageDataService>(BuildServiceIds.BuildDefinitionPageDataService);
-            const definition = await pageSvc.getDefinition();
+            const pageSvc = await SDK.getService<IBuildPageDataService>(BuildServiceIds.BuildPageDataService);
+            const buildPageData = await pageSvc.getBuildPageData();
 
-            if (definition) {
-                const result = await getClient(BuildRestClient).getDefinition(definition.id, project.id);
+            if (buildPageData && buildPageData.build) {
+                const result = await getClient(BuildRestClient).getBuild(buildPageData.build.id, project.id);
                 const messageService = await SDK.getService<IGlobalMessagesService>(CommonServiceIds.GlobalMessagesService);
                 messageService.setGlobalMessageBanner({
                     level: MessageBannerLevel.info,
-                    messageFormat: `Build ${result.name} authored by ${result.authoredBy.displayName}. {0} for more details.`,
+                    messageFormat: `Build ${result.buildNumber} requested by ${result.requestedBy.displayName}. {0} for more details.`,
                     messageLinks: [{
                         name: "Click here",
                         href: result.url
