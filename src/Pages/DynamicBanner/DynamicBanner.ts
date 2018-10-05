@@ -1,10 +1,9 @@
-import "es6-promise/auto";
 import * as SDK from "azure-devops-extension-sdk/SDK";
 import { getClient } from "azure-devops-extension-api/extensions/Client";
 import { CommonServiceIds, IGlobalMessagesService, IProjectPageService, MessageBannerLevel } from "azure-devops-extension-api/extensions/CommonServices";
 
+import { BuildServiceIds, IBuildDefinitionPageDataService } from "azure-devops-extension-api/extensions/BuildServices";
 import { BuildRestClient } from "azure-devops-extension-api/clients/Build";
-import { BuildDefinition } from "azure-devops-extension-api/types/Build";
 
 SDK.register("DynamicBannerService", () => {
     return {
@@ -13,7 +12,7 @@ SDK.register("DynamicBannerService", () => {
             const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
             const project = await projectService.getProject();
 
-            const pageSvc = await SDK.getService<{ getDefinition: () => Promise<BuildDefinition | undefined> }>("ms.vss-build-web.definitions-page-data-service");
+            const pageSvc = await SDK.getService<IBuildDefinitionPageDataService>(BuildServiceIds.BuildDefinitionPageDataService);
             const definition = await pageSvc.getDefinition();
 
             if (definition) {
