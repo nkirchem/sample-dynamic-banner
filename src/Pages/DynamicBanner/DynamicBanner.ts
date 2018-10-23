@@ -15,7 +15,7 @@ SDK.register("DynamicBannerService", () => {
             const pageSvc = await SDK.getService<IBuildPageDataService>(BuildServiceIds.BuildPageDataService);
             const buildPageData = await pageSvc.getBuildPageData();
 
-            if (buildPageData && buildPageData.build) {
+            if (project && buildPageData && buildPageData.build) {
                 const result = await getClient(BuildRestClient).getBuild(buildPageData.build.id, project.id);
                 const messageService = await SDK.getService<IGlobalMessagesService>(CommonServiceIds.GlobalMessagesService);
                 messageService.setGlobalMessageBanner({
