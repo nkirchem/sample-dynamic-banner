@@ -1,9 +1,7 @@
 import * as SDK from "azure-devops-extension-sdk/SDK";
-import { getClient } from "azure-devops-extension-api/extensions/Client";
-import { CommonServiceIds, IGlobalMessagesService, IProjectPageService, MessageBannerLevel } from "azure-devops-extension-api/extensions/CommonServices";
+import { CommonServiceIds, getClient, IGlobalMessagesService, IProjectPageService, MessageBannerLevel } from "azure-devops-extension-api";
 
-import { BuildServiceIds, IBuildPageDataService } from "azure-devops-extension-api/extensions/BuildServices";
-import { BuildRestClient } from "azure-devops-extension-api/clients/Build";
+import { BuildRestClient, BuildServiceIds, IBuildPageDataService } from "azure-devops-extension-api/Build";
 
 SDK.register("DynamicBannerService", () => {
     return {
@@ -16,7 +14,7 @@ SDK.register("DynamicBannerService", () => {
             const buildPageData = await pageSvc.getBuildPageData();
 
             if (project && buildPageData && buildPageData.build) {
-                const result = await getClient(BuildRestClient).getBuild(buildPageData.build.id, project.id);
+                const result = await getClient(BuildRestClient).getBuild(project.id, buildPageData.build.id);
                 const messageService = await SDK.getService<IGlobalMessagesService>(CommonServiceIds.GlobalMessagesService);
                 messageService.setGlobalMessageBanner({
                     level: MessageBannerLevel.info,
