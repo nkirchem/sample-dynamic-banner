@@ -4,7 +4,7 @@
             "id": "dynamic-banner-subscription",
             "type": "ms.vss-web.event-subscription",
             "targets": [
-                "ms.vss-build-web.ci-results-hub"
+                "ms.vss-web.tfs-website"
             ],
             "properties": {
                 "eventName": "page-interactive",
@@ -15,8 +15,5 @@
                 }
             }
         }
-    ],
-    "scopes": [
-        "vso.build"
     ]
 }
